@@ -3,7 +3,7 @@ resource "aws_security_group" "alb_sg" {
   vpc_id = var.vpc_id
 
   dynamic "ingress" {
-    for_each = var.alb_ingress_rules
+    for_each = var.alb_ingress_rules == null ? [] : var.alb_ingress_rules
     content {
       description = ingress.value.description
       from_port   = ingress.value.from_port
@@ -14,7 +14,7 @@ resource "aws_security_group" "alb_sg" {
   }
 
   dynamic "egress" {
-    for_each = var.alb_egress_rules
+    for_each = var.alb_egress_rules == null ? [] : var.alb_egress_rules
     content {
       from_port   = egress.value.from_port
       to_port     = egress.value.to_port
@@ -29,7 +29,7 @@ resource "aws_security_group" "ec2_sg" {
   vpc_id = var.vpc_id
 
   dynamic "ingress" {
-    for_each = var.ec2_ingress_rules
+    for_each = var.ec2_ingress_rules == null ? [] : var.ec2_ingress_rules
     content {
       description     = ingress.value.description
       from_port       = ingress.value.from_port
@@ -40,7 +40,7 @@ resource "aws_security_group" "ec2_sg" {
   }
 
   dynamic "egress" {
-    for_each = var.ec2_egress_rules
+    for_each = var.ec2_egress_rules == null ? [] : var.ec2_egress_rules
     content {
       from_port   = egress.value.from_port
       to_port     = egress.value.to_port
