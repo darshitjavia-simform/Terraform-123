@@ -61,6 +61,14 @@ private_nacl_ingress_rules = [
     cidr_block = "10.0.0.0/16"
     from_port  = 0
     to_port    = 65535
+  },
+  {
+    rule_no    = 110
+    protocol   = "tcp"
+    action     = "allow"
+    cidr_block = "0.0.0.0/0" # Allow ALB to access port 80
+    from_port  = 80
+    to_port    = 80
   }
 ]
 
@@ -74,6 +82,8 @@ private_nacl_egress_rules = [
     to_port    = 0
   }
 ]
+
+
 
 tags = {
   Environment = "dev"
@@ -98,13 +108,6 @@ alb_ingress_rules = [
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   },
-  {
-    description = "HTTPS"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 ]
 
 alb_egress_rules = [
@@ -118,12 +121,13 @@ alb_egress_rules = [
 ]
 
 ec2_ingress_rules = [
-
   {
     description = "Health Check from ALB"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+
   }
 ]
 

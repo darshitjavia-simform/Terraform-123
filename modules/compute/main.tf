@@ -35,7 +35,7 @@ resource "aws_security_group" "ec2_sg" {
       from_port       = ingress.value.from_port
       to_port         = ingress.value.to_port
       protocol        = ingress.value.protocol
-      security_groups = [aws_security_group.alb_sg.id]
+      security_groups = [aws_security_group.alb_sg.id] # Allow traffic from ALB
     }
   }
 
@@ -47,6 +47,7 @@ resource "aws_security_group" "ec2_sg" {
       protocol    = egress.value.protocol
       cidr_blocks = egress.value.cidr_blocks
     }
+
   }
 }
 
@@ -72,13 +73,15 @@ resource "aws_lb_target_group" "app_tg" {
     healthy_threshold   = 2
     interval            = 30
     matcher             = "200"
-    path                = "/"
+    path                = "/health"
     port                = "traffic-port"
     protocol            = "HTTP"
     timeout             = 5
     unhealthy_threshold = 2
   }
 }
+
+#Listener for ALB
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.app_alb.arn
@@ -88,6 +91,7 @@ resource "aws_lb_listener" "http" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.app_tg.arn
+
   }
 }
 
@@ -95,12 +99,13 @@ module "autoscaling" {
   source  = "terraform-aws-modules/autoscaling/aws"
   version = "6.10.0"
 
-  name                = var.asg_name
-  vpc_zone_identifier = var.private_subnets
-  min_size            = var.asg_min
-  max_size            = var.asg_max
-  desired_capacity    = var.asg_desired
-  health_check_type   = "ELB"
+  name                      = var.asg_name
+  vpc_zone_identifier       = var.private_subnets
+  min_size                  = var.asg_min
+  max_size                  = var.asg_max
+  desired_capacity          = var.asg_desired
+  health_check_type         = "ELB"
+  health_check_grace_period = 300
 
   create_launch_template = true
   launch_template_name   = "launch-tmpl"
@@ -112,12 +117,18 @@ module "autoscaling" {
 
   user_data = base64encode(<<-EOT
     #!/bin/bash
-    yum update -y
-    yum install -y httpd
-    systemctl enable httpd
-    systemctl start httpd
-    echo "<h1>Hello from $(hostname -f)</h1>" > /var/www/html/index.html
-    echo "OK" > /var/www/html/health
+yum update -y
+yum install -y httpd
+systemctl enable httpd
+systemctl start httpd
+
+mkdir -p /var/www/html
+echo "<h1>Hello from $(hostname)</h1>" > /var/www/html/index.html
+echo "OK" > /var/www/html/health
+
+chown -R apache:apache /var/www/html
+chmod -R 755 /var/www/html
+
   EOT
   )
 

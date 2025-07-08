@@ -87,6 +87,7 @@ variable "tags" {
 
 #compute module variables
 
+
 variable "alb_sg_name" {
   type = string
 
@@ -110,6 +111,7 @@ variable "ec2_ingress_rules" {
     from_port   = number
     to_port     = number
     protocol    = string
+    cidr_blocks = list(string)
   }))
   description = "Ingress rules for the EC2 security group"
 }
@@ -154,4 +156,21 @@ variable "asg_max" {
 
 variable "asg_desired" {
   type = number
+}
+
+#################################
+
+variable "name" {
+  description = "Prefix name for resources"
+  type        = string
+}
+
+variable "backup_bucket" {
+  type        = string
+  description = "S3 bucket name for backup"
+}
+
+variable "environment" {
+  type        = string
+  default     = "dev"
 }
