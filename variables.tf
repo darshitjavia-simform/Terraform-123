@@ -158,19 +158,45 @@ variable "asg_desired" {
   type = number
 }
 
-#################################
-
-variable "name" {
-  description = "Prefix name for resources"
+# Database Instance Variables
+variable "db_ami_id" {
+  description = "AMI ID for the database instance"
   type        = string
 }
 
-variable "backup_bucket" {
+variable "db_instance_type" {
+  description = "Instance type for the database server"
   type        = string
-  description = "S3 bucket name for backup"
+  default     = "t3.micro"
 }
 
-variable "environment" {
+variable "db_root_password" {
+  description = "Root password for MySQL database"
   type        = string
-  default     = "dev"
+  sensitive   = true
 }
+
+variable "db_name" {
+  description = "Name of the MySQL database"
+  type        = string
+}
+
+variable "db_user" {
+  description = "Username for MySQL database"
+  type        = string
+}
+
+variable "db_password" {
+  description = "Password for MySQL database user"
+  type        = string
+  sensitive   = true
+}
+
+variable "db_backup_bucket" {
+  description = "Name of S3 bucket for database backups"
+  type        = string
+}
+
+
+#frontend module variables
+

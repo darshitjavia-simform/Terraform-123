@@ -83,14 +83,11 @@ private_nacl_egress_rules = [
   }
 ]
 
-
-
 tags = {
   Environment = "dev"
   Owner       = "darshit"
   Terraform   = "true"
 }
-
 
 #coumpte vrariables
 
@@ -149,4 +146,16 @@ asg_max = 5
 
 asg_desired = 2
 
+###########################
+# variables for database module
+###########################
+
+# Database configuration
+db_ami_id         = "ami-0c803b171269e2d72"  # Amazon Linux 2 AMI ID
+db_instance_type  = "t3.micro"
+db_root_password  = "YourSecureRootPassword123!"
+db_name           = "myappdb"
+db_user           = "myappuser"
+db_password       = "YourSecurePassword456!"
+db_backup_bucket  = "my-app-db-backup-bucket"
 
