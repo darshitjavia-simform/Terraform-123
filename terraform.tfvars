@@ -31,6 +31,14 @@ public_nacl_ingress_rules = [
     cidr_block = "0.0.0.0/0"
     from_port  = 443
     to_port    = 443
+  },
+  {
+    rule_no    = 120
+    protocol   = "tcp"
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
   }
 ]
 
@@ -50,25 +58,27 @@ public_nacl_egress_rules = [
     cidr_block = "0.0.0.0/0"
     from_port  = 443
     to_port    = 443
+  },
+  {
+    rule_no    = 120
+    protocol   = "tcp"
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
   }
 ]
+
+# Custom Network ACL for private subnets
 
 private_nacl_ingress_rules = [
   {
     rule_no    = 100
     protocol   = "tcp"
     action     = "allow"
-    cidr_block = "10.0.0.0/16"
+    cidr_block = "10.0.0.0/16" # Allow internal communication
     from_port  = 0
     to_port    = 65535
-  },
-  {
-    rule_no    = 110
-    protocol   = "tcp"
-    action     = "allow"
-    cidr_block = "0.0.0.0/0" # Allow ALB to access port 80
-    from_port  = 80
-    to_port    = 80
   }
 ]
 
@@ -82,6 +92,7 @@ private_nacl_egress_rules = [
     to_port    = 0
   }
 ]
+
 
 tags = {
   Environment = "dev"
@@ -123,9 +134,8 @@ ec2_ingress_rules = [
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-
-  }
+    cidr_blocks = []
+  },
 ]
 
 ec2_egress_rules = [
@@ -151,11 +161,11 @@ asg_desired = 2
 ###########################
 
 # Database configuration
-db_ami_id         = "ami-0c803b171269e2d72"  # Amazon Linux 2 AMI ID
-db_instance_type  = "t3.micro"
-db_root_password  = "YourSecureRootPassword123!"
-db_name           = "myappdb"
-db_user           = "myappuser"
-db_password       = "YourSecurePassword456!"
-db_backup_bucket  = "my-app-db-backup-bucket"
+db_ami_id        = "ami-0c803b171269e2d72" # Amazon Linux 2 AMI ID
+db_instance_type = "t3.micro"
+db_root_password = "YourSecureRootPassword123!"
+db_name          = "myappdb"
+db_user          = "myappuser"
+db_password      = "YourSecurePassword456!"
+db_backup_bucket = "my-app-db-backup-bucket"
 

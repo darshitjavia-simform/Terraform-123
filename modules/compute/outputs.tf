@@ -23,11 +23,6 @@ output "alb_security_group_id" {
   value       = aws_security_group.alb_sg.id
 }
 
-output "ec2_security_group_id" {
-  description = "Security Group ID for EC2 instances"
-  value       = aws_security_group.ec2_sg.id
-}
-
 output "autoscaling_group_name" {
   description = "Name of the Auto Scaling Group"
   value       = module.autoscaling.autoscaling_group_name

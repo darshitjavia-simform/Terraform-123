@@ -16,6 +16,7 @@
     dynamic "egress" {
       for_each = var.alb_egress_rules == null ? [] : var.alb_egress_rules
       content {
+        description = egress.value.description
         from_port   = egress.value.from_port
         to_port     = egress.value.to_port
         protocol    = egress.value.protocol
@@ -31,17 +32,18 @@
     dynamic "ingress" {
       for_each = var.ec2_ingress_rules == null ? [] : var.ec2_ingress_rules
       content {
-        description = ingress.value.description
-        from_port   = ingress.value.from_port
-        to_port     = ingress.value.to_port
-        protocol    = ingress.value.protocol
-        cidr_blocks = ingress.value.cidr_blocks
-      }
+        description     = ingress.value.description
+        from_port       = ingress.value.from_port
+        to_port         = ingress.value.to_port
+        protocol        = ingress.value.protocol
+        security_groups = [aws_security_group.alb_sg.id] # Allow access from ALB security group
+        }
     }
 
     dynamic "egress" {
       for_each = var.ec2_egress_rules == null ? [] : var.ec2_egress_rules
       content {
+        #description = egress.value.description
         from_port   = egress.value.from_port
         to_port     = egress.value.to_port
         protocol    = egress.value.protocol
@@ -52,23 +54,23 @@
 
   # Separate security group rules to avoid circular dependency
 
-  resource "aws_security_group_rule" "alb_to_ec2" {
-    type                     = "egress"
-    from_port                = 80
-    to_port                  = 80
-    protocol                 = "tcp"
-    source_security_group_id = aws_security_group.ec2_sg.id
-    security_group_id        = aws_security_group.alb_sg.id
-  }
+  # resource "aws_security_group_rule" "alb_to_ec2" {
+  #   type                     = "egress"
+  #   from_port                = 80
+  #   to_port                  = 80
+  #   protocol                 = "tcp"
+  #   source_security_group_id = aws_security_group.ec2_sg.id
+  #   security_group_id        = aws_security_group.alb_sg.id
+  # }
 
-  resource "aws_security_group_rule" "ec2_from_alb" {
-    type                     = "ingress"
-    from_port                = 80
-    to_port                  = 80
-    protocol                 = "tcp"
-    source_security_group_id = aws_security_group.alb_sg.id
-    security_group_id        = aws_security_group.ec2_sg.id
-  }
+  # resource "aws_security_group_rule" "ec2_from_alb" {
+  #   type                     = "ingress"
+  #   from_port                = 80
+  #   to_port                  = 80
+  #   protocol                 = "tcp"
+  #   source_security_group_id = aws_security_group.alb_sg.id
+  #   security_group_id        = aws_security_group.ec2_sg.id
+  # }
 
   # Application Load Balancer (ALB) and Target Group
 
@@ -138,21 +140,22 @@
     security_groups = [aws_security_group.ec2_sg.id]
 
     user_data = base64encode(<<-EOT
-      #!/bin/bash
+  #!/bin/bash
   yum update -y
   yum install -y httpd
-  systemctl enable httpd
-  systemctl start httpd
 
   mkdir -p /var/www/html
-  echo "<h1>Hello from $(hostname)</h1>" > /var/www/html/index.html
-  echo "OK" > /var/www/html
 
-  chown -R apache:apache /var/www/html
-  chmod -R 755 /var/www/html
+  echo "<h1>running on ASG - Instance: $(curl -s http://169.254.169.254/latest/meta-data/instance-id)</h1>" > /var/www/html/index.html
 
-    EOT
-    )
+  chown apache:apache /var/www/html/index.html
+  chmod 644 /var/www/html/index.html
+
+  systemctl enable httpd
+  systemctl start httpd
+EOT
+)
+
 
     depends_on = [aws_lb_target_group.app_tg]
   }

@@ -94,11 +94,23 @@ variable "alb_sg_name" {
 }
 
 variable "alb_ingress_rules" {
-  type = list(any)
+  type = list(object({
+    description = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
 }
 
 variable "alb_egress_rules" {
-  type = list(any)
+  type = list(object({
+    description = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
 }
 
 variable "ec2_sg_name" {
@@ -107,11 +119,12 @@ variable "ec2_sg_name" {
 
 variable "ec2_ingress_rules" {
   type = list(object({
-    description = string
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    cidr_blocks = list(string)
+    description     = string
+    from_port       = number
+    to_port         = number
+    protocol        = string
+    cidr_blocks     = list(string)
+    security_groups = optional(list(string))
   }))
   description = "Ingress rules for the EC2 security group"
 }
@@ -122,6 +135,7 @@ variable "ec2_egress_rules" {
     from_port   = number
     to_port     = number
     protocol    = string
+    cidr_blocks = list(string) # CIDR blocks to allow outbound traffic
   }))
   description = "Egress rules for the EC2 security group"
 }
