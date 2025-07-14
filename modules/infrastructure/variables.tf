@@ -1,4 +1,4 @@
-# Reuse all VPC-related variables in root, but values come from dev.tfvars
+
 variable "vpc_name"{ 
   type = string 
 }
@@ -27,53 +27,54 @@ variable "single_nat_gateway"{
 variable "enable_vpn_gateway"{ 
   type = bool 
 }
-variable "manage_default_network_acl"{ 
-  type = bool 
-}
 
-variable "enable_public_nacl"{ 
-  type = bool 
-}
-variable "enable_private_nacl"{ 
-  type = bool 
-}
+# variable "manage_default_network_acl"{ 
+#   type = bool 
+# }
 
-variable "public_nacl_ingress_rules"     { type = list(object({
-  rule_no    = number
-  protocol   = string
-  action     = string
-  cidr_block = string
-  from_port  = number
-  to_port    = number
-})) }
+# variable "enable_public_nacl"{ 
+#   type = bool 
+# }
+# variable "enable_private_nacl"{ 
+#   type = bool 
+# }
 
-variable "public_nacl_egress_rules"      { type = list(object({
-  rule_no    = number
-  protocol   = string
-  action     = string
-  cidr_block = string
-  from_port  = number
-  to_port    = number
-})) }
+# variable "public_nacl_ingress_rules"     { type = list(object({
+#   rule_no    = number
+#   protocol   = string
+#   action     = string
+#   cidr_block = string
+#   from_port  = number
+#   to_port    = number
+# })) }
 
-variable "private_nacl_ingress_rules"    { type = list(object({
-  rule_no    = number
-  protocol   = string
-  action     = string
-  cidr_block = string
-  from_port  = number
-  to_port    = number
-})) }
+# variable "public_nacl_egress_rules"      { type = list(object({
+#   rule_no    = number
+#   protocol   = string
+#   action     = string
+#   cidr_block = string
+#   from_port  = number
+#   to_port    = number
+# })) }
 
-variable "private_nacl_egress_rules"     { type = list(object({
-  rule_no    = number
-  protocol   = string
-  action     = string
-  cidr_block = string
-  from_port  = number
-  to_port    = number
-})) }
+# variable "private_nacl_ingress_rules"    { type = list(object({
+#   rule_no    = number
+#   protocol   = string
+#   action     = string
+#   cidr_block = string
+#   from_port  = number
+#   to_port    = number
+# })) }
 
-variable "tags" {
-  type = map(string)
-}
+# variable "private_nacl_egress_rules"     { type = list(object({
+#   rule_no    = number
+#   protocol   = string
+#   action     = string
+#   cidr_block = string
+#   from_port  = number
+#   to_port    = number
+# })) }
+
+# variable "tags" {
+#   type = map(string)
+# }

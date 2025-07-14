@@ -1,10 +1,10 @@
 variable "aws_region" {
   type        = string
   description = "AWS region where resources will be created"
-  default     = "us-east-2"
 }
 
-# Reuse all VPC-related variables in root, but values come from dev.tfvars
+#Infrastructure module variables
+
 variable "vpc_name" {
   type = string
 }
@@ -33,60 +33,10 @@ variable "single_nat_gateway" {
 variable "enable_vpn_gateway" {
   type = bool
 }
-variable "manage_default_network_acl" {
-  type = bool
-}
 
-variable "enable_public_nacl" {
-  type = bool
-}
-variable "enable_private_nacl" {
-  type = bool
-}
-
-variable "public_nacl_ingress_rules" { type = list(object({
-  rule_no    = number
-  protocol   = string
-  action     = string
-  cidr_block = string
-  from_port  = number
-  to_port    = number
-})) }
-
-variable "public_nacl_egress_rules" { type = list(object({
-  rule_no    = number
-  protocol   = string
-  action     = string
-  cidr_block = string
-  from_port  = number
-  to_port    = number
-})) }
-
-variable "private_nacl_ingress_rules" { type = list(object({
-  rule_no    = number
-  protocol   = string
-  action     = string
-  cidr_block = string
-  from_port  = number
-  to_port    = number
-})) }
-
-variable "private_nacl_egress_rules" { type = list(object({
-  rule_no    = number
-  protocol   = string
-  action     = string
-  cidr_block = string
-  from_port  = number
-  to_port    = number
-})) }
-
-variable "tags" {
-  type = map(string)
-}
-
-
+#############################################
 #compute module variables
-
+#############################################
 
 variable "alb_sg_name" {
   type = string
@@ -172,45 +122,54 @@ variable "asg_desired" {
   type = number
 }
 
+
+# ##############################################################
+# # Database Instance Variables
+# ##############################################################
+
+
 # Database Instance Variables
-variable "db_ami_id" {
-  description = "AMI ID for the database instance"
+
+variable "environment" {
   type        = string
+  description = "Environment name (dev/stage/prod)"
+}
+
+variable "ami_id" {
+  type        = string
+  description = "AMI ID for DB EC2 instance"
 }
 
 variable "db_instance_type" {
-  description = "Instance type for the database server"
   type        = string
-  default     = "t3.micro"
+  description = "EC2 instance type for database"
+}
+
+variable "volume_size" {
+  type        = number
+  description = "Root volume size in GB"
 }
 
 variable "db_root_password" {
-  description = "Root password for MySQL database"
   type        = string
+  description = "DB root password"
   sensitive   = true
 }
 
 variable "db_name" {
-  description = "Name of the MySQL database"
   type        = string
+  description = "Name of the database"
 }
 
 variable "db_user" {
-  description = "Username for MySQL database"
   type        = string
+  description = "Database user"
 }
 
 variable "db_password" {
-  description = "Password for MySQL database user"
   type        = string
+  description = "Database user password"
   sensitive   = true
 }
 
-variable "db_backup_bucket" {
-  description = "Name of S3 bucket for database backups"
-  type        = string
-}
-
-
 #frontend module variables
-

@@ -139,27 +139,21 @@
     key_name        = var.key_name
     security_groups = [aws_security_group.ec2_sg.id]
 
-    user_data = base64encode(<<-EOT
+ user_data = base64encode(<<-EOT
   #!/bin/bash
-  yum update -y
-  yum install -y httpd
+  sudo apt-get update -y
+  sudo apt-get install -y apache2
 
-  mkdir -p /var/www/html
+  sudo mkdir -p /var/www/html
+  echo "<h1>Welcome to Apache on Ubuntu (ASG)</h1>" | sudo tee /var/www/html/index.html > /dev/null
 
-  echo "<h1>running on ASG - Instance: $(curl -s http://169.254.169.254/latest/meta-data/instance-id)</h1>" > /var/www/html/index.html
-
-  chown apache:apache /var/www/html/index.html
-  chmod 644 /var/www/html/index.html
-
-  systemctl enable httpd
-  systemctl start httpd
+  sudo systemctl enable apache2
+  sudo systemctl start apache2
 EOT
 )
 
-
     depends_on = [aws_lb_target_group.app_tg]
   }
-
 
 
   # Add this resource to create a target group attachment for the Auto Scaling group
