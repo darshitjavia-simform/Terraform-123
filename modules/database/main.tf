@@ -1,6 +1,6 @@
 # Generates a random lowercase string to append to the S3 bucket name to ensure global uniqueness.
 resource "random_string" "bucket_suffix" {
-  length  = 3
+  length  = 2
   special = false
   upper   = false
 }
@@ -158,7 +158,7 @@ module "db_secrets" {
   source  = "terraform-aws-modules/secrets-manager/aws"
   version = "~> 1.0"
 
-  name_prefix             = "${var.environment}-db-credentials"
+  name                    = "${var.environment}-db-credentials"
   description             = "MySQL credentials for ${var.environment} DB on EC2"
   recovery_window_in_days = 7
 
