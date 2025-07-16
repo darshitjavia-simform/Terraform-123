@@ -1,10 +1,3 @@
-# Generates a random lowercase string to append to the S3 bucket name to ensure global uniqueness.
-resource "random_string" "bucket_suffix" {
-  length  = 2
-  special = false
-  upper   = false
-}
-
 # Security group for the database instance
 # Allows MySQL traffic (port 3306) only from the application server's security group.
 resource "aws_security_group" "db_sg" {
@@ -33,6 +26,15 @@ resource "aws_security_group" "db_sg" {
     Name = "${var.environment}-db-sg"
   }
 }
+
+
+# Generates a random lowercase string to append to the S3 bucket name to ensure global uniqueness.
+resource "random_string" "bucket_suffix" {
+  length  = 2
+  special = false
+  upper   = false
+}
+
 
 # Creates a private S3 bucket to store database backups.
 # Uses the random suffix to ensure global uniqueness.
@@ -158,7 +160,7 @@ module "db_secrets" {
   source  = "terraform-aws-modules/secrets-manager/aws"
   version = "~> 1.0"
 
-  name                    = "${var.environment}-db-credentials"
+  name                    = "${var.environment}-db-credentials-1.0"
   description             = "MySQL credentials for ${var.environment} DB on EC2"
   recovery_window_in_days = 7
 

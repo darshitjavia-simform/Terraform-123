@@ -7,7 +7,7 @@ exec > >(tee /var/log/db-setup.log|logger -t user-data -s 2>/dev/console) 2>&1
 # Set environment variables
 export environment="dev"
 export aws_region="us-east-2"
-export SECRET_NAME="${environment}-db-credentials"
+export SECRET_NAME="${environment}-db-credentials-1.0"
 
 # Install required packages
 sudo apt-get update -y
