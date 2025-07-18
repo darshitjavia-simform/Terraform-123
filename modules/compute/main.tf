@@ -52,25 +52,6 @@
     }
   }
 
-  # Separate security group rules to avoid circular dependency
-
-  # resource "aws_security_group_rule" "alb_to_ec2" {
-  #   type                     = "egress"
-  #   from_port                = 80
-  #   to_port                  = 80
-  #   protocol                 = "tcp"
-  #   source_security_group_id = aws_security_group.ec2_sg.id
-  #   security_group_id        = aws_security_group.alb_sg.id
-  # }
-
-  # resource "aws_security_group_rule" "ec2_from_alb" {
-  #   type                     = "ingress"
-  #   from_port                = 80
-  #   to_port                  = 80
-  #   protocol                 = "tcp"
-  #   source_security_group_id = aws_security_group.alb_sg.id
-  #   security_group_id        = aws_security_group.ec2_sg.id
-  # }
 
   # Application Load Balancer (ALB) and Target Group
 
@@ -129,6 +110,9 @@
     desired_capacity              = var.asg_desired
     health_check_type             = "ELB"
     health_check_grace_period     = 300
+
+
+# Launch Template Configuration
 
 
     create_launch_template = true

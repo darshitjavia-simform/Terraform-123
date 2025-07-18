@@ -129,15 +129,16 @@ resource "aws_cloudfront_distribution" "frontend_cdn" {
   ]
 }
 
-# Upload static files to S3 after bucket is created
-resource "null_resource" "upload_static_files" {
-  provisioner "local-exec" {
-    command = <<EOT
-      echo "Uploading static site files to S3..."
-      aws s3 cp ./modules/frontend/error.html s3://${module.s3_frontend.s3_bucket_id}/error.html
-      aws s3 cp ./modules/frontend/index.html s3://${module.s3_frontend.s3_bucket_id}/index.html
-    EOT
-  }
 
-  depends_on = [module.s3_frontend]
-}
+# # Upload static files to S3 after bucket is created
+# resource "null_resource" "upload_static_files" {
+#   provisioner "local-exec" {
+#     command = <<EOT
+#       echo "Uploading static site files to S3..."
+#       aws s3 cp ./modules/frontend/error.html s3://${module.s3_frontend.s3_bucket_id}/error.html
+#       aws s3 cp ./modules/frontend/index.html s3://${module.s3_frontend.s3_bucket_id}/index.html
+#     EOT
+#   }
+
+#   depends_on = [module.s3_frontend]
+# }

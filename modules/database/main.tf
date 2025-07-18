@@ -160,7 +160,7 @@ module "db_secrets" {
   source  = "terraform-aws-modules/secrets-manager/aws"
   version = "~> 1.0"
 
-  name                    = "${var.environment}-db-credentials-1.0"
+  name                    = "todo-api-db"
   description             = "MySQL credentials for ${var.environment} DB on EC2"
   recovery_window_in_days = 7
 
