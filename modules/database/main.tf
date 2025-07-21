@@ -137,14 +137,16 @@ resource "aws_instance" "db_instance" {
   # - Set up database and user
   # - Schedule daily S3 backups using cron
 
-  user_data = templatefile("${path.module}/user_data.sh", {
+    user_data = templatefile("${path.module}/user_data.sh", {
     db_root_password = var.db_root_password
     db_name          = var.db_name
     db_user          = var.db_user
+    # db_host          = aws_instance.db_instance.private_ip
     db_password      = var.db_password
     s3_bucket        = aws_s3_bucket.db_backup.bucket
     environment      = var.environment
     aws_region       = var.aws_region
+    # random_suffix    = random_pet.name.id
   })
 
   tags = {
@@ -160,7 +162,7 @@ module "db_secrets" {
   source  = "terraform-aws-modules/secrets-manager/aws"
   version = "~> 1.0"
 
-  name                    = "todo-api-db"
+  name                    = "${var.environment}-db-credentials-3"
   description             = "MySQL credentials for ${var.environment} DB on EC2"
   recovery_window_in_days = 7
 
@@ -168,6 +170,7 @@ module "db_secrets" {
     db_name     = var.db_name
     db_user     = var.db_user
     db_password = var.db_password
+    # db_host     = db_instance.p
   })
 
   tags = {
@@ -201,3 +204,10 @@ resource "aws_iam_role_policy_attachment" "secrets_read_attach" {
   role       = aws_iam_role.db_role.name
   policy_arn = aws_iam_policy.secrets_read_policy.arn
 }
+
+# resource "random_pet" "name" {
+#   length    = 2
+#   separator = "-"
+#   }
+
+  

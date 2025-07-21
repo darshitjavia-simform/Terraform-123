@@ -5,9 +5,9 @@ set -e
 exec > >(tee /var/log/db-setup.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 # Set environment variables
-export environment="dev"
-export aws_region="us-east-2"
-export SECRET_NAME="todo-api-db"
+export environment="${environment}"
+export aws_region="${aws_region}"
+export SECRET_NAME="${environment}-db-credentials-3"
 
 # Install required packages
 sudo apt-get update -y
@@ -54,12 +54,24 @@ echo "Parsed DB Name: $DB_NAME"
 echo "Parsed DB User: $DB_USER"
 
 # Create DB and user
-sudo mysql -u root <<EOF
+sudo mysql <<EOF
 CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;
 CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASS';
 GRANT ALL PRIVILEGES ON \`$DB_NAME\`.* TO '$DB_USER'@'%';
 FLUSH PRIVILEGES;
+
+USE \`$DB_NAME\`;
+CREATE TABLE IF NOT EXISTS todos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    status VARCHAR(50) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 EOF
+
+
+
 
 # Allow external MySQL connections
 sudo sed -i "s/^bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
