@@ -22,5 +22,11 @@ output "db_security_group_id" {
   value = aws_security_group.db_sg.id
 }
 
+# Output the private DNS name of the database server.
+# This can be used by the application server to connect to the database without needing to know the
+output "db_private_dns" {
+  value = aws_instance.db_instance.private_dns
+}
+
 
 

@@ -38,6 +38,8 @@ module "compute" {
   alb_egress_rules              = var.alb_egress_rules
   ec2_ingress_rules             = var.ec2_ingress_rules
   ec2_egress_rules              = var.ec2_egress_rules
+  environment                   = var.environment
+  aws_region                        = var.aws_region
 }
 
 

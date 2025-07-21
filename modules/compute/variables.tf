@@ -98,3 +98,12 @@ variable "asg_max" {
 variable "asg_desired" {
   type = number
 }
+
+variable "environment"{
+  type = string
+}
+
+variable "aws_region" {
+  type        = string
+  description = "AWS region where the resources will be created"
+}

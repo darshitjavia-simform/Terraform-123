@@ -1,4 +1,4 @@
-  resource "aws_security_group" "alb_sg" {
+resource "aws_security_group" "alb_sg" {
     name   = var.alb_sg_name
     vpc_id = var.vpc_id
 
@@ -99,42 +99,75 @@
     }
   }
 
+######################################
+
+  resource "aws_iam_role" "backend_role" {
+  name = "${var.environment}-backend-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_policy" "ssm_read_policy" {
+  name = "${var.environment}-ssm-read"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = [
+        "ssm:GetParameter"
+      ],
+      Resource = "*"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "backend_ssm_attach" {
+  role       = aws_iam_role.backend_role.name
+  policy_arn = aws_iam_policy.ssm_read_policy.arn
+}
+
+resource "aws_iam_instance_profile" "backend_instance_profile" {
+  name = "${var.environment}-backend-instance-profile"
+  role = aws_iam_role.backend_role.name
+}
+
+
+  #Auto scaling 
+
   module "autoscaling" {
-    source  = "terraform-aws-modules/autoscaling/aws"
-    version = "9.0.1"
+  source  = "terraform-aws-modules/autoscaling/aws"
+  version = "9.0.1"
 
-    name                          = var.asg_name
-    vpc_zone_identifier           = var.private_subnets
-    min_size                      = var.asg_min
-    max_size                      = var.asg_max
-    desired_capacity              = var.asg_desired
-    health_check_type             = "ELB"
-    health_check_grace_period     = 300
+  name                          = var.asg_name
+  vpc_zone_identifier           = var.private_subnets
+  min_size                      = var.asg_min
+  max_size                      = var.asg_max
+  desired_capacity              = var.asg_desired
+  health_check_type             = "ELB"
+  health_check_grace_period     = 300
 
+  create_launch_template        = true
+  launch_template_name          = "launch-tmpl"
+  image_id                      = var.image_id
+  instance_type                 = var.instance_type
+  key_name                      = var.key_name
+  security_groups               = [aws_security_group.ec2_sg.id]
+  iam_instance_profile_name     = aws_iam_instance_profile.backend_instance_profile.name
 
-# Launch Template Configuration
+  
+  user_data = base64encode(templatefile("${path.module}/user_data.sh.tpl", {
+    environment = var.environment,
+    aws_region  = var.aws_region
+  }))
 
-
-    create_launch_template = true
-    launch_template_name   = "launch-tmpl"
-
-    image_id        = var.image_id
-    instance_type   = var.instance_type
-    key_name        = var.key_name
-    security_groups = [aws_security_group.ec2_sg.id]
-
- user_data = base64encode(<<-EOT
-  #!/bin/bash
-  sudo apt-get update -y
-  sudo apt-get install -y apache2
-
-  sudo mkdir -p /var/www/html
-  echo "<h1>Welcome to Apache on Ubuntu (ASG)</h1>" | sudo tee /var/www/html/index.html > /dev/null
-
-  sudo systemctl enable apache2
-  sudo systemctl start apache2
-EOT
-)
 
     depends_on = [aws_lb_target_group.app_tg]
   }

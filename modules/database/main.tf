@@ -131,7 +131,7 @@ resource "aws_instance" "db_instance" {
     volume_type = "gp3"                   # Recommended volume type for performance
     encrypted   = true                    # Encrypts the EBS volume for security
   }
-
+  
   # Bootstraps the instance using a shell script to:
   # - Install MySQL
   # - Set up database and user
@@ -156,13 +156,22 @@ resource "aws_instance" "db_instance" {
 }
 
 
+# Store the private DNS of the DB instance in SSM
+resource "aws_ssm_parameter" "db_private_dns" {
+  name  = "/${var.environment}/db/endpoint"
+  type  = "String"
+  value = aws_instance.db_instance.private_dns
+}
+
+
+
 #secure database credentials using AWS Secrets Manager
 
 module "db_secrets" {
   source  = "terraform-aws-modules/secrets-manager/aws"
   version = "~> 1.0"
 
-  name                    = "${var.environment}-db-credentials-3"
+  name                    = "${var.environment}-db-credentials-5"
   description             = "MySQL credentials for ${var.environment} DB on EC2"
   recovery_window_in_days = 7
 
