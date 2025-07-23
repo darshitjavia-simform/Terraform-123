@@ -166,6 +166,9 @@ resource "aws_iam_instance_profile" "backend_instance_profile" {
   user_data = base64encode(templatefile("${path.module}/user_data.sh.tpl", {
     environment = var.environment,
     aws_region  = var.aws_region
+    db_user = var.db_user
+    db_password = var.db_password
+    db_name = var.db_name
   }))
 
 

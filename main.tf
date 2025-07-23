@@ -39,7 +39,10 @@ module "compute" {
   ec2_ingress_rules             = var.ec2_ingress_rules
   ec2_egress_rules              = var.ec2_egress_rules
   environment                   = var.environment
-  aws_region                        = var.aws_region
+  aws_region                    = var.aws_region
+  db_user                       = var.db_user
+  db_password                   = var.db_password
+  db_name                       = var.db_name
 }
 
 

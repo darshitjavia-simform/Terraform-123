@@ -107,3 +107,18 @@ variable "aws_region" {
   type        = string
   description = "AWS region where the resources will be created"
 }
+
+variable "db_user" {
+  type        = string
+  description = "Database username"
+}
+
+variable "db_password" {
+  type        = string
+  description = "Database password"
+}
+
+variable "db_name" {
+  type        = string
+  description = "Database name"
+}

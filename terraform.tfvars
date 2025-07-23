@@ -78,4 +78,4 @@ volume_size = 20
 db_root_password = "RootPassword123"
 db_name = "myappdb"
 db_user = "appuser"
-db_password = "AppUser123"
+db_password = "appuser123"
